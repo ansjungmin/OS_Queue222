@@ -97,7 +97,29 @@ Reply enqueue(Queue* queue, Item item) {
 }
 
 Reply dequeue(Queue* queue) {
-	
+    Reply reply = { false, {0, nullptr} };
+
+    if (queue == nullptr) return reply;
+
+    lock_guard<mutex> lock(queue->queue_mutex);
+
+    Node* first_node = queue->head->next;
+
+    if (first_node == nullptr) {
+        return reply;
+    }
+    queue->head->next = first_node->next;
+    if (first_node == queue->tail) {
+        queue->tail = queue->head;
+    }
+
+    reply.success = true;
+    reply.item = first_node->item;
+
+    queue->size.fetch_sub(1);
+    nfree(first_node);
+
+    return reply;
 }
 
 Queue* range(Queue* queue, Key start, Key end) {
