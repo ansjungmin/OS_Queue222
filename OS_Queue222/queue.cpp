@@ -39,17 +39,29 @@ void release(Queue* queue) {
 
 
 Node* nalloc(Item item) {
-	
+    Node* node = new Node;
+    if (node == nullptr) return nullptr;
+
+    node->item = item;
+    node->next = nullptr;
+    node->marked.store(false);
+
+    return node;
 }
 
 
 void nfree(Node* node) {
-	
+    if (node != nullptr) {
+        delete node;
+    }
 }
 
 
 Node* nclone(Node* node) {
-	
+    if (node == nullptr) return nullptr;
+
+    Node* cloned = nalloc(node->item);
+    return cloned;
 }
 
 
