@@ -2,7 +2,7 @@
 #include <mutex>
 #include <atomic>
 #include "queue.h"
-
+using namespace std;
 
 Queue* init(void) {
     Queue* queue = new Queue;
@@ -23,7 +23,18 @@ Queue* init(void) {
 
 
 void release(Queue* queue) {
-	
+    if (queue == nullptr) return;
+
+    lock_guard<mutex> lock(queue->queue_mutex);
+
+    Node* current = queue->head;
+    while (current != nullptr) {
+        Node* temp = current;
+        current = current->next;
+        delete temp;
+    }
+
+    delete queue;
 }
 
 
