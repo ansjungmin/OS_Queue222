@@ -66,7 +66,34 @@ Node* nclone(Node* node) {
 
 
 Reply enqueue(Queue* queue, Item item) {
-	
+    Reply reply = { false, {0, nullptr} };
+
+    if (queue == nullptr) return reply;
+
+    Node* new_node = nalloc(item);
+    if (new_node == nullptr) return reply;
+
+    lock_guard<mutex> lock(queue->queue_mutex);
+    Node* prev = queue->head;
+    Node* current = queue->head->next;
+
+    while (current != nullptr && current->item.key > item.key) {
+        prev = current;
+        current = current->next;
+    }
+
+    new_node->next = current;
+    prev->next = new_node;
+
+    if (current == nullptr) {
+        queue->tail = new_node;
+    }
+
+    queue->size.fetch_add(1);
+    reply.success = true;
+    reply.item = item;
+
+    return reply;
 }
 
 Reply dequeue(Queue* queue) {
