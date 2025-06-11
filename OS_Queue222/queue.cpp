@@ -5,7 +5,20 @@
 
 
 Queue* init(void) {
-	
+    Queue* queue = new Queue;
+    if (queue == nullptr) return nullptr;
+
+    Node* dummy_head = new Node;
+    dummy_head->item.key = 0;
+    dummy_head->item.value = nullptr;
+    dummy_head->next = nullptr;
+    dummy_head->marked.store(false);
+
+    queue->head = dummy_head;
+    queue->tail = dummy_head;
+    queue->size.store(0);
+
+    return queue;
 }
 
 

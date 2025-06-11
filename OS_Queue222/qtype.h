@@ -25,7 +25,8 @@ typedef struct node_t {
 } Node;
 
 typedef struct {
-    Node* head, tail;
+    Node* head;
+    Node* tail;
     std::mutex queue_mutex;
     std::atomic<int>size;
 } Queue;
