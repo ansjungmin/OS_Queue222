@@ -123,5 +123,26 @@ Reply dequeue(Queue* queue) {
 }
 
 Queue* range(Queue* queue, Key start, Key end) {
-	
+    if (queue == nullptr) return nullptr;
+
+    Queue* result_queue = init();
+    if (result_queue == nullptr) return nullptr;
+
+    lock_guard<mutex> lock(queue->queue_mutex);
+
+    Node* current = queue->head->next;  
+
+    while (current != nullptr) {
+        if (current->item.key >= start && current->item.key <= end) {
+            Node* cloned = nclone(current);
+            if (cloned != nullptr) {
+                result_queue->tail->next = cloned;
+                result_queue->tail = cloned;
+                result_queue->size.fetch_add(1);
+            }
+        }
+        current = current->next;
+    }
+
+    return result_queue;
 }
