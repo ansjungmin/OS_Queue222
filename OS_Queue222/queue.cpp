@@ -25,9 +25,14 @@ Queue* init(void) {
 void release(Queue* queue) {
     if (queue == nullptr) return;
 
-    lock_guard<mutex> lock(queue->queue_mutex);
+    Node* current;
+    {
+        lock_guard<mutex> lock(queue->queue_mutex);
+        current = queue->head;
+        queue->head = nullptr;
+        queue->tail = nullptr;
+    }
 
-    Node* current = queue->head;
     while (current != nullptr) {
         Node* temp = current;
         current = current->next;
